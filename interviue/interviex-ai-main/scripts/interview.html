@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Questions</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #111827;
+      color: #e5e7eb;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .container {
+      background-color: #1f2937;
+      border-radius: 10px;
+      padding: 20px 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      color: #f3f4f6;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .interview-info {
+      background-color: #374151;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+    .info-item {
+      margin-bottom: 5px;
+    }
+    .info-label {
+      color: #9ca3af;
+      font-size: 14px;
+      display: block;
+      margin-bottom: 3px;
+    }
+    .question-item {
+      background-color: #2d3748;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      border: 1px solid #4b5563;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .question-item:hover {
+      border-color: #6366f1;
+      background-color: #333b4e;
+    }
+    .question-item.active {
+      border-color: #6366f1;
+      background-color: #374151;
+    }
+    .question-number {
+      color: #9ca3af;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    .question-text {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .answer {
+      display: none;
+      padding: 15px;
+      font-size: 15px;
+      background-color: #374151;
+      border-radius: 6px;
+      margin-top: 10px;
+      border-left: 3px solid #6366f1;
+    }
+    .question-item.active .answer {
+      display: block;
+    }
+    .answer-label {
+      color: #9ca3af;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .btn-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .btn {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #4338ca;
+    }
+    .btn:disabled {
+      background-color: #6b7280;
+      cursor: not-allowed;
+    }
+    .error-box {
+      color: #ef4444;
+      padding: 15px;
+      background-color: #374151;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .code-block {
+      background: #2d3748;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      overflow-x: auto;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Interview Questions</h1>
+    
+    <div class="interview-info">
+      <div class="info-item">
+        <span class="info-label">Role</span>
+        <div id="role">Frontend Developer</div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Level</span>
+        <div id="level">Mid-level</div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Tech Stack</span>
+        <div id="techstack">React, TypeScript, CSS</div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Focus</span>
+        <div id="type">Technical</div>
+      </div>
+    </div>
+    
+    <div id="questions-container">
+      <div class="loading">Loading questions...</div>
+    </div>
+    
+    <div class="btn-container">
+      <button id="load-btn" class="btn">Load Questions</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const questionsContainer = document.getElementById('questions-container');
+      const loadBtn = document.getElementById('load-btn');
+      
+      // Sample questions (will be replaced with loaded questions)
+      let questions = [];
+      
+      function toggleQuestion(index) {
+        const questionItems = document.querySelectorAll('.question-item');
+        questionItems.forEach((item, i) => {
+          if (i === index) {
+            item.classList.toggle('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+      }
+      
+      function renderQuestions() {
+        questionsContainer.innerHTML = '';
+        
+        if (questions.length === 0) {
+          questionsContainer.innerHTML = '<div>No questions available. Click "Load Questions" to generate.</div>';
+          return;
+        }
+        
+        questions.forEach((q, index) => {
+          const questionItem = document.createElement('div');
+          questionItem.className = 'question-item';
+          questionItem.dataset.index = index;
+          
+          questionItem.innerHTML = `
+            <div class="question-number">Question ${index + 1}</div>
+            <div class="question-text">${q.question}</div>
+            <div class="answer">
+              <span class="answer-label">Sample Response:</span>
+              ${q.answer}
+            </div>
+          `;
+          
+          questionItem.addEventListener('click', function() {
+            toggleQuestion(index);
+          });
+          
+          questionsContainer.appendChild(questionItem);
+        });
+      }
+      
+      // Create a fallback set of questions in case loading fails
+      function createFallbackQuestions() {
+        return [
+          {
+            question: "What is your experience with React and TypeScript?",
+            answer: "Discuss your experience with React components, hooks, and TypeScript type definitions."
+          },
+          {
+            question: "How do you approach responsive design using CSS?",
+            answer: "Talk about media queries, flexbox, CSS Grid, and mobile-first development."
+          },
+          {
+            question: "Describe a challenging technical problem you solved recently.",
+            answer: "Explain the problem, your approach, and the solution you implemented."
+          }
+        ];
+      }
+      
+      loadBtn.addEventListener('click', function() {
+        loadBtn.disabled = true;
+        loadBtn.textContent = 'Loading...';
+        questionsContainer.innerHTML = '<div>Loading questions...</div>';
+        
+        try {
+          // Get the current script path to determine the correct path to the JSON file
+          const scriptPath = document.currentScript ? document.currentScript.src : null;
+          const jsonPath = 'generated-questions.json';
+          
+          // Try to load the questions from generated-questions.json
+          fetch(jsonPath)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Failed to load questions (${response.status} ${response.statusText})`);
+              }
+              return response.text(); // Get as text first to check for HTML
+            })
+            .then(text => {
+              try {
+                // Check if the response is HTML (starts with <!DOCTYPE or <html)
+                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                  throw new Error("Received HTML instead of JSON. The file probably doesn't exist.");
+                }
+                
+                // Parse the JSON
+                const data = JSON.parse(text);
+                questions = data;
+                renderQuestions();
+                loadBtn.textContent = 'Refresh Questions';
+                loadBtn.disabled = false;
+              } catch (parseError) {
+                throw new Error(`Error parsing JSON: ${parseError.message}. Received: ${text.substring(0, 50)}...`);
+              }
+            })
+            .catch(error => {
+              console.error("Error loading questions:", error);
+              
+              // Create a helpful error message
+              const errorMsg = `
+                <div class="error-box">
+                  <strong>Error loading questions:</strong> ${error.message}<br><br>
+                  
+                  <p>To fix this issue:</p>
+                  <ol>
+                    <li>Make sure you've run the <code>generate-questions.js</code> script first</li>
+                    <li>Check that the JSON file was created in the same folder as this HTML file</li>
+                    <li>Try running the setup script again: <code>node setup.js</code></li>
+                  </ol>
+                  
+                  <p>You can run the Node.js script to generate questions:</p>
+                  <div class="code-block">node generate-questions.js</div>
+                  
+                  <p>Using fallback questions for now...</p>
+                </div>
+              `;
+              
+              questionsContainer.innerHTML = errorMsg;
+              
+              // Use fallback questions
+              questions = createFallbackQuestions();
+              renderQuestions();
+              
+              loadBtn.textContent = 'Try Again';
+              loadBtn.disabled = false;
+            });
+        } catch (error) {
+          console.error("Error in fetch:", error);
+          questionsContainer.innerHTML = `<div class="error-box">Error: ${error.message}</div>`;
+          loadBtn.textContent = 'Try Again';
+          loadBtn.disabled = false;
+        }
+      });
+      
+      // Initial render
+      renderQuestions();
+    });
+  </script>
+</body>
+</html> 
